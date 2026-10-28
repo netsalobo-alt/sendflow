@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Copy source and build frontend bundle
 COPY . .
@@ -19,7 +19,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 COPY package*.json ./
-RUN npm ci --omit=dev && npm install -g tsx
+RUN npm install --omit=dev --legacy-peer-deps && npm install -g tsx
 
 # Copy compiled frontend and backend code
 COPY --from=builder /app/dist ./dist
