@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net - default deny all undefined paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidSystemDoc(docId) {
+      return isValidId(docId) &&
+        incoming().updatedAt is string &&
+        incoming().updatedAt.size() <= 64;
+    }
+
+    function isValidCampaign(campId) {
+      return isValidId(campId) &&
+        incoming().name is string &&
+        incoming().name.size() > 0 &&
+        incoming().name.size() <= 200 &&
+        incoming().status is string &&
+        incoming().status.size() <= 50;
+    }
+
+    function isValidContactList(listId) {
+      return isValidId(listId) &&
+        incoming().name is string &&
+        incoming().name.size() > 0 &&
+        incoming().name.size() <= 200;
+    }
+
+    function isValidConnection(connId) {
+      return isValidId(connId) &&
+        incoming().name is string &&
+        incoming().name.size() > 0 &&
+        incoming().name.size() <= 200 &&
+        incoming().baseUrl is string &&
+        incoming().baseUrl.size() <= 256;
+    }
+
+    // System persistence document for auto-restoring after container restart
+    match /system/{docId} {
+      allow read: if isValidId(docId);
+      allow create, update: if isValidSystemDoc(docId);
+      allow delete: if isValidId(docId);
+    }
+
+    // Campaigns collection
+    match /campaigns/{campaignId} {
+      allow read: if isValidId(campaignId);
+      allow create, update: if isValidCampaign(campaignId);
+      allow delete: if isValidId(campaignId);
+    }
+
+    // Contact lists collection
+    match /contactLists/{listId} {
+      allow read: if isValidId(listId);
+      allow create, update: if isValidContactList(listId);
+      allow delete: if isValidId(listId);
+    }
+
+    // Chatwoot connections collection
+    match /connections/{connectionId} {
+      allow read: if isValidId(connectionId);
+      allow create, update: if isValidConnection(connectionId);
+      allow delete: if isValidId(connectionId);
+    }
+  }
+}

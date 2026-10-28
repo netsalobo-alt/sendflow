@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "SendFlow system user account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "username"]
+    },
+    "ChatwootConnection": {
+      "title": "ChatwootConnection",
+      "description": "Saved Chatwoot instance connection",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "baseUrl": { "type": "string" },
+        "accountId": { "type": "number" },
+        "encryptedToken": { "type": "string" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "baseUrl", "accountId"]
+    },
+    "ContactList": {
+      "title": "ContactList",
+      "description": "Saved contact lists for campaigns",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "contactCount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "Mass messaging campaign with scheduling and rate limits",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "connectionId": { "type": "string" },
+        "status": { "type": "string" },
+        "totalContacts": { "type": "number" },
+        "sentCount": { "type": "number" },
+        "failedCount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "status"]
+    },
+    "SystemBackup": {
+      "title": "SystemBackup",
+      "description": "Unified persistent state document for SendFlow across container recycles",
+      "type": "object",
+      "properties": {
+        "version": { "type": "number" },
+        "updatedAt": { "type": "string" },
+        "payload": { "type": "string" }
+      },
+      "required": ["version", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/system/{systemDocId}": {
+      "schema": "SystemBackup",
+      "description": "Persistent synchronized system state document"
+    },
+    "/campaigns/{campaignId}": {
+      "schema": "Campaign",
+      "description": "Campaign documents"
+    },
+    "/contactLists/{listId}": {
+      "schema": "ContactList",
+      "description": "Contact list documents"
+    },
+    "/connections/{connectionId}": {
+      "schema": "ChatwootConnection",
+      "description": "Chatwoot connection documents"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  sendflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sendflow
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - APP_SECRET=sendflow_super_secret_chave_de_criptografia_2026
+      # Opcional: defina uma chave padrão da OpenAI se desejar
+      # - OPENAI_API_KEY=sk-...
+    volumes:
+      # O diretório ./data no seu servidor host guarda db.json e imagens enviadas em campanhas
+      - ./data:/app/data
+
